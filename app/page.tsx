@@ -1,65 +1,147 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import DeckCard from "@/components/DeckCard";
+import BottomNav from "@/components/BottomNav";
+import DesktopHeader from "@/components/DesktopHeader";
+import { useAppData } from "@/context/app-data-context";
+
+export default function HomePage() {
+  const { ready, decks, addDeck, updateDeck, deleteDeck } = useAppData();
+  const [name, setName] = useState("");
+  const [editing, setEditing] = useState(null);
+
+  function handleCreate(e) {
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    addDeck(trimmed);
+    setName("");
+  }
+
+  function handleDelete(id) {
+    if (typeof window !== "undefined" && window.confirm("Delete this deck?")) {
+      deleteDeck(id);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      <DesktopHeader />
+      <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col px-4 pb-28 pt-6 md:px-6 md:pb-10 md:pt-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            Your decks
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-1 text-zinc-500 dark:text-zinc-400">
+            Create decks and study offline — saved on this device.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        <form
+          onSubmit={handleCreate}
+          className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end"
+        >
+          <div className="min-w-0 flex-1">
+            <label
+              htmlFor="new-deck"
+              className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              New deck
+            </label>
+            <input
+              id="new-deck"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. English Vocabulary"
+              className="min-h-12 w-full rounded-xl border border-zinc-200 bg-white px-4 text-base text-zinc-900 shadow-sm outline-none ring-violet-500/30 placeholder:text-zinc-400 focus:border-violet-500 focus:ring-2 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-500"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+          <button
+            type="submit"
+            className="min-h-12 shrink-0 rounded-xl bg-violet-600 px-6 text-base font-semibold text-white shadow-md transition active:scale-[0.98] active:bg-violet-700 dark:bg-violet-500 dark:active:bg-violet-600"
           >
-            Documentation
-          </a>
+            Create
+          </button>
+        </form>
+
+        {!ready ? (
+          <p className="text-zinc-500 dark:text-zinc-400">Loading…</p>
+        ) : decks.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/80 px-6 py-12 text-center dark:border-zinc-700 dark:bg-zinc-900/40">
+            <p className="text-lg font-medium text-zinc-700 dark:text-zinc-200">
+              No decks yet
+            </p>
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+              Add a name above and tap Create to get started.
+            </p>
+          </div>
+        ) : (
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {decks.map((deck) => (
+              <li key={deck.id}>
+                <DeckCard
+                  deck={deck}
+                  onEdit={(d) => setEditing(d)}
+                  onDelete={handleDelete}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {editing && (
+        <div
+          className="fixed inset-0 z-100 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-deck-title"
+        >
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900">
+            <h2
+              id="edit-deck-title"
+              className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
+            >
+              Rename deck
+            </h2>
+            <form
+              className="mt-4 flex flex-col gap-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateDeck(editing.id, editing.name);
+                setEditing(null);
+              }}
+            >
+              <input
+                autoFocus
+                value={editing.name}
+                onChange={(e) =>
+                  setEditing({ ...editing, name: e.target.value })
+                }
+                className="min-h-12 w-full rounded-xl border border-zinc-200 bg-white px-4 text-base outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditing(null)}
+                  className="min-h-11 rounded-xl px-4 font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="min-h-11 rounded-xl bg-violet-600 px-5 font-semibold text-white dark:bg-violet-500"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </main>
-    </div>
+      )}
+
+      <BottomNav />
+    </>
   );
 }
