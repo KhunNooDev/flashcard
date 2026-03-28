@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import type { CardStatus, Flashcard } from "@/lib/types";
 import FlashcardFlip from "./FlashcardFlip";
 
-const statusStyles = {
+const statusStyles: Record<CardStatus, string> = {
   new: "bg-amber-100 text-amber-900 dark:bg-amber-950/50 dark:text-amber-200",
   learning:
     "bg-sky-100 text-sky-900 dark:bg-sky-950/50 dark:text-sky-200",
@@ -11,7 +12,17 @@ const statusStyles = {
     "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200",
 };
 
-export default function FlashcardItem({ card, onEdit, onDelete }) {
+type FlashcardItemProps = {
+  card: Flashcard;
+  onEdit: (card: Flashcard) => void;
+  onDelete: (id: string) => void;
+};
+
+export default function FlashcardItem({
+  card,
+  onEdit,
+  onDelete,
+}: FlashcardItemProps) {
   const [flipped, setFlipped] = useState(false);
 
   return (

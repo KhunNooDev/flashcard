@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Geist } from "next/font/google";
 import AppDataProvider from "@/context/app-data-context";
 import "./globals.css";
@@ -13,7 +14,11 @@ export const metadata: Metadata = {
   description: "Create decks and study flashcards — saved locally on your device.",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <html
       lang="en"

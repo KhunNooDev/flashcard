@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import BottomNav from "@/components/BottomNav";
 import DesktopHeader from "@/components/DesktopHeader";
 import FlashcardItem from "@/components/FlashcardItem";
 import { useAppData } from "@/context/app-data-context";
+import type { Flashcard } from "@/lib/types";
 
 export default function DeckDetailPage() {
   const params = useParams();
@@ -17,9 +18,9 @@ export default function DeckDetailPage() {
 
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
-  const [editingCard, setEditingCard] = useState(null);
+  const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
 
-  function handleAdd(e) {
+  function handleAdd(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!deck || !front.trim()) return;
     addCard(deck.id, front, back);
@@ -27,7 +28,7 @@ export default function DeckDetailPage() {
     setBack("");
   }
 
-  function handleDeleteCard(cardId) {
+  function handleDeleteCard(cardId: string) {
     if (!deck) return;
     if (typeof window !== "undefined" && window.confirm("Delete this card?")) {
       deleteCard(deck.id, cardId);
@@ -103,7 +104,9 @@ export default function DeckDetailPage() {
             Front
             <textarea
               value={front}
-              onChange={(e) => setFront(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                setFront(e.target.value)
+              }
               rows={2}
               placeholder="Question or term"
               className="mt-1 min-h-12 w-full resize-y rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-base outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/25 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
@@ -113,7 +116,9 @@ export default function DeckDetailPage() {
             Back
             <textarea
               value={back}
-              onChange={(e) => setBack(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                setBack(e.target.value)
+              }
               rows={2}
               placeholder="Answer or translation"
               className="mt-1 min-h-12 w-full resize-y rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-base outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/25 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
@@ -142,7 +147,7 @@ export default function DeckDetailPage() {
                 <li key={card.id}>
                   <FlashcardItem
                     card={card}
-                    onEdit={(c) => setEditingCard(c)}
+                    onEdit={(c: Flashcard) => setEditingCard(c)}
                     onDelete={handleDeleteCard}
                   />
                 </li>
@@ -168,7 +173,7 @@ export default function DeckDetailPage() {
             </h2>
             <form
               className="mt-4 flex flex-col gap-4"
-              onSubmit={(e) => {
+              onSubmit={(e: FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
                 if (!deck) return;
                 updateCard(deck.id, editingCard.id, editingCard.front, editingCard.back);
@@ -179,7 +184,7 @@ export default function DeckDetailPage() {
                 Front
                 <textarea
                   value={editingCard.front}
-                  onChange={(e) =>
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                     setEditingCard({ ...editingCard, front: e.target.value })
                   }
                   rows={3}
@@ -190,7 +195,7 @@ export default function DeckDetailPage() {
                 Back
                 <textarea
                   value={editingCard.back}
-                  onChange={(e) =>
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                     setEditingCard({ ...editingCard, back: e.target.value })
                   }
                   rows={3}

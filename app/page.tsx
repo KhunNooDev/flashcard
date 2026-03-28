@@ -1,17 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import DeckCard from "@/components/DeckCard";
 import BottomNav from "@/components/BottomNav";
 import DesktopHeader from "@/components/DesktopHeader";
 import { useAppData } from "@/context/app-data-context";
+import type { Deck } from "@/lib/types";
 
 export default function HomePage() {
   const { ready, decks, addDeck, updateDeck, deleteDeck } = useAppData();
   const [name, setName] = useState("");
-  const [editing, setEditing] = useState(null);
+  const [editing, setEditing] = useState<Deck | null>(null);
 
-  function handleCreate(e) {
+  function handleCreate(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
@@ -19,7 +20,7 @@ export default function HomePage() {
     setName("");
   }
 
-  function handleDelete(id) {
+  function handleDelete(id: string) {
     if (typeof window !== "undefined" && window.confirm("Delete this deck?")) {
       deleteDeck(id);
     }
@@ -52,7 +53,9 @@ export default function HomePage() {
             <input
               id="new-deck"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setName(e.target.value)
+              }
               placeholder="e.g. English Vocabulary"
               className="min-h-12 w-full rounded-xl border border-zinc-200 bg-white px-4 text-base text-zinc-900 shadow-sm outline-none ring-violet-500/30 placeholder:text-zinc-400 focus:border-violet-500 focus:ring-2 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-500"
             />
@@ -82,7 +85,7 @@ export default function HomePage() {
               <li key={deck.id}>
                 <DeckCard
                   deck={deck}
-                  onEdit={(d) => setEditing(d)}
+                  onEdit={(d: Deck) => setEditing(d)}
                   onDelete={handleDelete}
                 />
               </li>
@@ -107,7 +110,7 @@ export default function HomePage() {
             </h2>
             <form
               className="mt-4 flex flex-col gap-4"
-              onSubmit={(e) => {
+              onSubmit={(e: FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
                 updateDeck(editing.id, editing.name);
                 setEditing(null);
@@ -116,7 +119,7 @@ export default function HomePage() {
               <input
                 autoFocus
                 value={editing.name}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditing({ ...editing, name: e.target.value })
                 }
                 className="min-h-12 w-full rounded-xl border border-zinc-200 bg-white px-4 text-base outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"

@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import type { Deck } from "@/lib/types";
 
-export default function DeckCard({ deck, onEdit, onDelete }) {
+type DeckCardProps = {
+  deck: Deck;
+  onEdit: (deck: Deck) => void;
+  onDelete: (id: string) => void;
+};
+
+export default function DeckCard({ deck, onEdit, onDelete }: DeckCardProps) {
   const count = deck.cards.length;
 
   return (

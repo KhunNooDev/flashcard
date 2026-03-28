@@ -1,6 +1,15 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, type KeyboardEvent } from "react";
+
+type FlashcardFlipProps = {
+  front: string;
+  back: string;
+  flipped: boolean;
+  onToggle: () => void;
+  className?: string;
+  hint?: string;
+};
 
 export default function FlashcardFlip({
   front,
@@ -9,9 +18,9 @@ export default function FlashcardFlip({
   onToggle,
   className = "",
   hint = "Tap to flip",
-}) {
+}: FlashcardFlipProps) {
   const handleKeyDown = useCallback(
-    (e) => {
+    (e: KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         onToggle();
